@@ -24,16 +24,22 @@ public class CopyAreaGenerator : MonoBehaviour
 	{
 		GameObject[,] Areas = new GameObject[_column,_row];
 
+		//生成開始する座標中心
+		gameObject.transform.localPosition = new Vector2(0,0);
+
+
 		//行
 		for (int i = 0; i < _row; i++)
 		{
 			//列
 			for (int j = 0; j < _column; j++)
 			{
-				Areas[i,j] = Instantiate(AreaPrefab,_masu) as GameObject;
-				Areas[i,j].transform.localPosition = new Vector2(i * 50,j * 50);
+				Areas[i, j] = Instantiate(AreaPrefab, _masu) as GameObject;
+				Areas[i, j].transform.localPosition = new Vector2((i * 50) - (_row * 25), (j * 50) -(_column * 25));
 			}
 		}
-	}
 
+
+
+	}
 }
