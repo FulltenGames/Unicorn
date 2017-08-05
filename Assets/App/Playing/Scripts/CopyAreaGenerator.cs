@@ -20,7 +20,7 @@ public class CopyAreaGenerator : MonoBehaviour
 
 	//エリアを増やすメソッドを書きたい
 	// Use this for initialization
-	void Start ()
+	public void Start ()
 	{
 		GameObject[,] Areas = new GameObject[_column,_row];
 
@@ -38,8 +38,5 @@ public class CopyAreaGenerator : MonoBehaviour
 				Areas[i, j].transform.localPosition = new Vector2((i * 50) - (_row * 25), (j * 50) -(_column * 25));
 			}
 		}
-
-
-
 	}
 }
