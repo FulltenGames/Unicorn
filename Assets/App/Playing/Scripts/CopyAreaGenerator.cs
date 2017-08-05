@@ -18,6 +18,8 @@ public class CopyAreaGenerator : MonoBehaviour
 	[SerializeField]
 	private Transform _masu;
 
+	public int unko = 10;
+
 	//エリアを増やすメソッドを書きたい
 	// Use this for initialization
 	public void Start ()
