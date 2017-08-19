@@ -14,6 +14,11 @@ AssetBundles/
 # =============== #
 /\.idea/
 
+## =============== #
+# VS CODE #
+# =============== #
+/\.vscode/
+
 # =============== #
 # Doxygen generated #
 # =============== #
@@ -29,10 +34,11 @@ ExportedObj/
 *.csproj
 *.pidb
 *.suo
-*.sln
+*.son
 *.user
 *.unityproj
 *.booproj
+
 
 # ============ #
 # OS generated #
