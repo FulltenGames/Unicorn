@@ -12,20 +12,21 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 	[SerializeField]
 	private int _row;
 	*/
-	public int _column;
+	[SerializeField]
+	private int _column;
+	public int Column{get{return _column;}}
 
-	public int _row;
-
+	[SerializeField]
+	private int _row;
+	public int Row{get{return _row;}}
 
 	// Use this for initialization
 	void Start () {
-		_column = SelectDifficult.column;
-		_row = SelectDifficult.row;
 		DontDestroyOnLoad(this.gameObject);
 	}
 
-	public void Parameter(){
-		_column = SelectDifficult.column;
-		_row = SelectDifficult.row;
+	public void Parameter(int column,int row){
+		_column = column;
+		_row = row;
 	}
 }

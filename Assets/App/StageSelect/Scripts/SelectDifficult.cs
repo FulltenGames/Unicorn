@@ -9,23 +9,23 @@ using UnityEngine.SceneManagement;
 public class SelectDifficult:MonoBehaviour
 {
 	[SerializeField]
-	public static int column;
+	private int _column;
 
 	[SerializeField]
-	public static int row;
+	private int _row;
 
 	[SerializeField]
 	private Button _button;
 
 	//難易度選択
-	void Start () {
-		GameManager.Instance.Parameter();
+	void Start () {		
 		//StageSelect画面に遷移
 		_button.onClick.AddListener(OnClick);
 	}
 
 	private void OnClick()
 	{	
+		GameManager.Instance.Parameter(_column,_row);
 		SceneManager.LoadScene("Playing");
 	}
 }
