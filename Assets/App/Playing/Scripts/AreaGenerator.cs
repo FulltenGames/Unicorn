@@ -6,7 +6,7 @@ public class AreaGenerator : MonoBehaviour
 {
 
 
-	public GameObject AreaPrefab;
+	//public GameObject AreaPrefab;
 
 	// Use this for initialization
 	void Start () {

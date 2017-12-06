@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-//public class SelectDifficult : MonoBehaviour
 public class SelectDifficult:MonoBehaviour
 {
 	[SerializeField]
@@ -18,13 +17,16 @@ public class SelectDifficult:MonoBehaviour
 	private Button _button;
 
 	//難易度選択
-	void Start () {		
+	void Start () { 
 		//StageSelect画面に遷移
 		_button.onClick.AddListener(OnClick);
 	}
 
 	private void OnClick()
-	{	
+	{
+        Debug.Log(this.gameObject.name + "のボタンが押された");
+
+        //インスペクタ上のGameManagerのColumnとRowを引数の値に
 		GameManager.Instance.Parameter(_column,_row);
 		SceneManager.LoadScene("Playing");
 	}
