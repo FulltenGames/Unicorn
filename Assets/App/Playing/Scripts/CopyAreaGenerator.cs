@@ -15,12 +15,13 @@ public class CopyAreaGenerator : MonoBehaviour
     //private Button _button;
 
 	public void Start ()
-	{
+	{   //確認
         Debug.Log("CopyAreaGeneratorが呼ばれた");
 		Debug.Log("Column" + GameManager.Instance.Column);
 		Debug.Log("Row" + GameManager.Instance.Row);
-		
-		GameObject[,] Areas = new GameObject[GameManager.Instance.Column,GameManager.Instance.Row];
+        
+        
+		GameObject[,] Areas = new GameObject[GameManager.Instance.Column,GameManager.Instance.Row];        
 
 		//生成開始する座標中心
 		gameObject.transform.localPosition = new Vector2(0,0);
@@ -32,12 +33,13 @@ public class CopyAreaGenerator : MonoBehaviour
 			for (int j = 0; j < GameManager.Instance.Column; j++)
 			{
 				Areas[i, j] = Instantiate(AreaPrefab, _masu) as GameObject;
+                Areas[i, j].name = AreaPrefab.name;
 				Areas[i, j].transform.localPosition = new Vector2((i * 50) - (GameManager.Instance.Row * 25) + 25, (j * 50) -(GameManager.Instance.Column * 25) + 25);
 			}
 		}
 
-        //動かない
-        //_button.onClick.AddListener(OnClick);
+    //動かない
+    //_button.onClick.AddListener(OnClick);
 	}
 
     private void OnClick()
