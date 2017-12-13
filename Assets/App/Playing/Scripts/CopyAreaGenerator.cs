@@ -11,10 +11,7 @@ public class CopyAreaGenerator : MonoBehaviour
     [SerializeField]
     private Transform _masu;
 
-    //[SerializeField]
-    //private Button _button;
-
-	public void Start ()
+    public void Start ()
 	{   //確認
         Debug.Log("CopyAreaGeneratorが呼ばれた");
 		Debug.Log("Column" + GameManager.Instance.Column);

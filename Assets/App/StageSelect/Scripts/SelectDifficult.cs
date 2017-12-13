@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class SelectDifficult:MonoBehaviour
-{
+public class SelectDifficult:MonoBehaviour{
+
 	[SerializeField]
 	private int _column;
 
