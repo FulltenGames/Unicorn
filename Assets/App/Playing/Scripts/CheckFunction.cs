@@ -5,53 +5,32 @@ using UnityEngine.UI;
 public class CheckFunction : MonoBehaviour {
 
     [SerializeField]
-    Status _status;
+    int _status;
 
     [SerializeField]
-    Status2 _status2;
+    int _status2;
 
     [SerializeField]
     private Button _button;
 
-    [SerializeField]
-    public int a = 3;
-
-
-    private enum Status
-    {
-
-        //ブロックのステータス(open・close)
-        CLOSED = 1,
-        OPENED = 2
-              
-    }
-
-    [SerializeField]
-    private enum Status2
-    {
-        //ブロックのステータス(bomb・safe)
-        SAFE = 3,
-        BOMB = 4
-
-    }
-
-    //Statusの取得
-    public int ｓParameter{get{return (int)_status;}}
-
-    public int SParameter2{get{return (int)_status2;}}
+    
     
 	// Use this for initialization
 	void Start () {
 
         //確認
-        Debug.Log("CheckFunctionのスタートメソッドが呼ばれている!!!!");
-        //Debug.Log(_a);
+        Debug.Log("CheckFunctionのスタートメソッドが呼ばれている");
 
-        //初期状態：全部閉じている
-        this._status = Status.CLOSED;
+        //PlayingDirectorの初期化
+        GameObject CG = GameObject.Find("/PlayingDirector");
+        
+        //CheckGame側で各ブロックのパラメータ設定（全ブロックClosed）
+        _status = CG.GetComponent<CheckGame>().sp;
 
-        //4個爆弾、他セーフの予定
-        this._status2 = Status2.BOMB;
+        //CheckGame側で各ブロックのパラメータ設定(全ブロックの内、一部Bombにしたい)
+        _status2 =CG.GetComponent<CheckGame>().sp2;
+        
+        //ブロックを開ける
         this._button.onClick.AddListener(Open);
     }
 
@@ -63,21 +42,28 @@ public class CheckFunction : MonoBehaviour {
     private void Open()
     {
         //確認
-        //Debug.Log("void Openが呼ばれた");
+        Debug.Log("オープンメソッドが呼ばれている");
 
-        if (this._status == Status.CLOSED)
-        {
-            this._status = Status.OPENED;
-            Debug.Log(this._status);
-        }
-        else
-        {
-            Debug.Log("既にオープンです" + Enum.GetName(typeof(Status), Status.OPENED));
-        }
-        
-        //CheckGame側で敗北テスト
+        //PlayingDirectorの初期化
         GameObject CG = GameObject.Find("/PlayingDirector");
-        Debug.Log(CG.GetComponent<CheckGame>());
-        CG.GetComponent<CheckGame>().Lose();
+                
+        //ブロックのオープン処理分岐
+        if(this._status != 2){
+            
+            //ブロックのオープン処理
+            this._status = 2;
+
+            //オープンしたブロックのSafe・Bomb情報をCheckGameに送る
+            CG.GetComponent<CheckGame>().sp2 = this._status2;
+
+            //勝敗確認
+            CG.GetComponent<CheckGame>().Win_Lose();
+            
+            }else if(this._status == 2){
+
+            //オープンブロックをオープンしようとしたときの処理
+            Debug.Log("このブロックは既にオープンになっています");
+
+        }        
     }
 }

@@ -6,14 +6,14 @@ using UnityEngine;
 public class GameManager : SingletonMonoBehaviour<GameManager>
 { 
 	[SerializeField]
-    //uGUI上の_columnの値
+    //インスペクタ上の_columnの値
 	private int _column;
 
 	[SerializeField]
-    //uGUI上の_rowの値
+    //インスペクタ上の_rowの値
 	private int _row;
 
-    //ゲッター
+    //ゲッター(参照用)
     public int Column { get { return _column; } }
     public int Row{get{return _row;}}
 
