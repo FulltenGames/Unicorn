@@ -29,12 +29,6 @@ public class CheckFunction : MonoBehaviour {
 	//ブロックのステータス2(safe・bomb)
     public int _status2_CF;
 
-	//ランダムシード
-	public int seed;
-
-	//座標系
-	public int position;
-
     [SerializeField]
     private Button _button;
 
@@ -42,30 +36,32 @@ public class CheckFunction : MonoBehaviour {
 	void Start() {
 
 		//確認
-		Debug.Log("CheckFunctionのスタートメソッドが呼ばれている");
-
-		//乱数生成(機能してない)
-		//UnityEngine.Random.InitState(256);
-		//seed = (int) UnityEngine.Random.value;
-		//Debug.Log(seed);
+		Debug.Log("CheckFunctionのスタートメソッドが呼ばれている");		
 
 		//PlayingDirectorの初期化
-		GameObject CG = GameObject.Find("/PlayingDirector");
+		GameObject PD = GameObject.Find("/PlayingDirector");
 
 		//CheckGame側で各ブロックのパラメータ設定（全ブロックClosed）
-		_status_CF = 1;
+		_status_CF = (int)Status.CLOSED;
 
 		//safe(enum)を入力
-		_status2_CF = 3;
+		this._status2_CF = (int)Status2.SAFE;
 
 		//bomb(enum)を入力
-		if(CG.GetComponent<CheckGame>().bombCount < 4)
+		foreach (int j in PD.GetComponent<CheckGame>().attachBomb)
 		{
-			_status2_CF = 4;
-			CG.GetComponent<CheckGame>().bombCount++;
-		}
+			Debug.Log("bombが入るのは" + j);
 
-        //ブロックを開ける
+			if(this.gameObject.name == ("AreaPrefab" + j))
+			{
+				//bomb設定
+				this._status2_CF = (int)Status2.BOMB;
+			}
+
+			Debug.Log("ステータス" + this.gameObject.name + "は" + this._status2_CF);
+		}
+		
+        //ブロックを開ける処理
         this._button.onClick.AddListener(Open);
     }
 
@@ -80,21 +76,21 @@ public class CheckFunction : MonoBehaviour {
         Debug.Log(this.gameObject);
 
         //PlayingDirectorの初期化
-        GameObject CG = GameObject.Find("/PlayingDirector");
+        GameObject PD = GameObject.Find("/PlayingDirector");
 
 		//クリックしたブロックの名前をCheckGameに渡す
-		CG.GetComponent<CheckGame>().blockObject = this.gameObject.name;
+		PD.GetComponent<CheckGame>().blockObject = this.gameObject.name;
                 
         //ブロックのオープン処理分岐
-        if(_status_CF != 2){
+        if(_status_CF != (int)Status.OPENED){
             
             //ブロックのオープン処理
-            _status_CF = 2;
+            _status_CF = (int)Status.OPENED;
             
             //勝敗確認
-            CG.GetComponent<CheckGame>().Win_Lose();
+            PD.GetComponent<CheckGame>().Win_Lose();
             
-            }else if(_status_CF == 2){
+            }else if(_status_CF == (int) Status.OPENED){
 
             //オープンブロックをオープンしようとしたときの処理
             Debug.Log("このブロックは既にオープンになっています");

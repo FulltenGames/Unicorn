@@ -18,17 +18,23 @@ public class CopyAreaGenerator : MonoBehaviour
 		//生成開始する座標中心
 		gameObject.transform.localPosition = new Vector2(0,0);
 
+		//ブロックのナンバリング(1～ブロックの個数)
+		int ss = 1;
+
 		//行
 		for (int i = 0; i < GameManager.Instance.Row; i++)
 		{
+			
 			//列
 			for (int j = 0; j < GameManager.Instance.Column; j++)
 			{
 				Areas[i, j] = Instantiate(AreaPrefab, _masu) as GameObject;
 
 				//ブロック毎に座標情報を付加して命名
-				Areas[i, j].name = "AreaPrefab" +(i + 1) + "_" + (j + 1);
+				//Areas[i, j].name = "AreaPrefab" +(i + 1) + "_" + (j + 1);
+				Areas[i, j].name = "AreaPrefab" + ss;
 				Areas[i, j].transform.localPosition = new Vector2((i * 50) - (GameManager.Instance.Row * 25) + 25, (j * 50) -(GameManager.Instance.Column * 25) + 25);
+				ss++;
 			}
 		}
 
