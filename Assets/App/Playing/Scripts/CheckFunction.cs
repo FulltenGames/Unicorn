@@ -56,6 +56,9 @@ public class CheckFunction : MonoBehaviour {
 			{
 				//bomb設定
 				this._status2_CF = (int)Status2.BOMB;
+
+				//bombが付加されているブロックに赤色を設定
+				this.GetComponent<Image>().color = new Color(1,0,0,1);
 			}
 
 			Debug.Log("ステータス" + this.gameObject.name + "は" + this._status2_CF);
@@ -80,12 +83,18 @@ public class CheckFunction : MonoBehaviour {
 
 		//クリックしたブロックの名前をCheckGameに渡す
 		PD.GetComponent<CheckGame>().blockObject = this.gameObject.name;
-                
+        
         //ブロックのオープン処理分岐
         if(_status_CF != (int)Status.OPENED){
             
             //ブロックのオープン処理
             _status_CF = (int)Status.OPENED;
+
+			//オープンした際にブロックの色を変更する
+			this.GetComponent<Image>().color = new Color(0, 1, 1, 1);
+
+			//ブロックのナンバーだけ取得
+			Debug.Log(this.gameObject.name.Substring(10));
             
             //勝敗確認
             PD.GetComponent<CheckGame>().Win_Lose();
@@ -95,6 +104,7 @@ public class CheckFunction : MonoBehaviour {
             //オープンブロックをオープンしようとしたときの処理
             Debug.Log("このブロックは既にオープンになっています");
 
-		}        
+		}
+
     }
 }

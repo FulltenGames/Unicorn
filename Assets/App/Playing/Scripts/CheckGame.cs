@@ -7,12 +7,16 @@ using UnityEngine.SceneManagement;
 
 public class CheckGame : MonoBehaviour{
 
-	//設置する地雷の数
+	//設置するbombの数
 	public int bombCount;
+
+	//安全なブロック数(全ブロック - bombCount)
+	int safeCount;
 
 	//呼び出すブロック
 	public string blockObject;
 
+	//bombを付加する変数
 	public int[] attachBomb;
 
 	// Use this for initialization
@@ -21,10 +25,16 @@ public class CheckGame : MonoBehaviour{
 		//確認
 		Debug.Log("CheckGameが呼ばれている");
 
+		//bombの数設定
 		bombCount = (GameManager.Instance.Row * GameManager.Instance.Column) / 4;
+
+		//safeブロックの数決定
+		safeCount = (GameManager.Instance.Row * GameManager.Instance.Column) - bombCount;
 
 		attachBomb = new int[bombCount];
 
+
+		//bombCountの数のブロックにbombを付加するよう決定する
 		for (int i = 0; i < bombCount; i++) { 
 
 			var ary = Enumerable.Range(1, GameManager.Instance.Row * GameManager.Instance.Column).OrderBy(n => Guid.NewGuid()).Take(bombCount).ToArray();
@@ -68,6 +78,13 @@ public class CheckGame : MonoBehaviour{
 
 			//シーン遷移
 			SceneManager.LoadScene("Title");
+		}
+
+		safeCount--;
+
+		if(safeCount == 0)
+		{
+			SceneManager.LoadScene("Result");
 		}
 	}
 
