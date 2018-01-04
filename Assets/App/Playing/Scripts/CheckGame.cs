@@ -10,14 +10,13 @@ public class CheckGame : MonoBehaviour{
 	//設置するbombの数
 	public int bombCount;
 
-	//安全なブロック数(全ブロック - bombCount)
-	int safeCount;
-
 	//呼び出すブロック
 	public string blockObject;
 
 	//bombを付加する変数
 	public int[] attachBomb;
+
+	private int safeCount;
 
 	// Use this for initialization
 	void Start()
@@ -80,12 +79,30 @@ public class CheckGame : MonoBehaviour{
 			SceneManager.LoadScene("Title");
 		}
 
-		safeCount--;
 
-		if(safeCount == 0)
+		//開けたブロックの数カウント
+		int j = 0;
+
+		for(int i = 0;i < GameManager.Instance.Row * GameManager.Instance.Column; i++)
 		{
-			SceneManager.LoadScene("Result");
+
+			//各ブロックのインスタンス
+			GameObject CB = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + (i + 1));
+
+			if(CB.GetComponent<CheckFunction>()._status_CF == 2)
+			{
+				//インクリメント
+				j++;
+
+				if(j == safeCount)
+				{
+					SceneManager.LoadScene("Result");
+				}
+			}
+
 		}
+
+		Debug.Log("開けたブロックの数:" + j);
 	}
 
 }

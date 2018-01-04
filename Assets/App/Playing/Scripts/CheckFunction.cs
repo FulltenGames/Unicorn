@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,8 +30,12 @@ public class CheckFunction : MonoBehaviour {
 	//ブロックのステータス2(safe・bomb)
 	public int _status2_CF;
 
+	//ブロックに付加するボタン
 	[SerializeField]
 	private Button _button;
+
+	//周囲のブロック郡
+	private int[] causedBlocks;
 
 	//各ブロックに対して呼ばれる
 	void Start() {
@@ -94,14 +99,11 @@ public class CheckFunction : MonoBehaviour {
 			//オープンした際にブロックの色を変更する(open)
 			this.GetComponent<Image>().color = new Color(0, 1, 1, 1);
 
-			//ブロックのナンバーだけ取得
-			Debug.Log(this.gameObject.name.Substring(10));
+			//クリックしたブロック周りの処理
+			causeOpend(this.gameObject.name);
 
 			//勝敗確認
 			PD.GetComponent<CheckGame>().Win_Lose();
-
-			//クリックしたブロック周りの処理
-			causeOpend(this.gameObject.name);
 
 		} else if (_status_CF == (int)Status.OPENED) {
 
@@ -112,54 +114,32 @@ public class CheckFunction : MonoBehaviour {
 
 	}
 
-	//クリックしたブロック周辺の処理
+	//クリックしてオープンしたブロック周辺の処理
 	public void causeOpend(string pointedNumber)
 	{
-		//オープンにしたブロックの番号
+		//クリックしてオープンしたブロックの番号取得 + 処理
 		int centerNumber_int = int.Parse(pointedNumber.Substring(10));
+		causedBlocks = moreOpenDecide(centerNumber_int);
 
-		int[] causedBlocks;
-
-		causedBlocks = moreOpen(centerNumber_int);
-
-		//確認
-		Debug.Log("centerNumber:" + centerNumber_int);
-
-		
-
-		foreach (int isChanged in causedBlocks)
+		//クリックしてオープンしたブロックの隣接に地雷が無い場合のみ開ける
+		if (aroundSearchBomb(causedBlocks) == false)
 		{
-			//空以外
-			if (isChanged != 0)
-			{
-				Debug.Log("isChangedの影響範囲:" + isChanged);
-			}
+			//影響させるブロックの連鎖オープン処理
+			moreOpen(causedBlocks);
 		}
-
-		foreach (int isChanged in causedBlocks)
-		{
-			//配列内の実値のみ
-			if (isChanged != 0)
-			{
-				//インスタンス初期化
-				GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + isChanged.ToString());
-
-				//開いてないものかつ、爆弾ではないもの
-				if (CF.GetComponent<CheckFunction>()._status_CF != (int)Status.OPENED && CF.GetComponent<CheckFunction>()._status2_CF != 4)
-				{
-
-					CF.GetComponent<CheckFunction>()._status_CF = (int)Status.OPENED;
-					CF.GetComponent<Image>().color = new Color(0, 1, 1, 1);
-				}
-			}
-		}
-
 	}
 
-	//どのブロックを処理するかの決定
-	public int[] moreOpen(int centerNumber){
+	//周囲ブロックの生成
+	public int[] moreOpenDecide(int centerNumber){
 
+		//8方向のブロック生成
 		int[] otherBlock = new int[8];
+
+		//空いていないブロックのみのList生成
+		List<int> unOpend = new List<int>();
+
+		//出力配列
+		int[] unOpendBlocks;
 
 		//左下
 		if (centerNumber == 1)
@@ -175,8 +155,6 @@ public class CheckFunction : MonoBehaviour {
 			otherBlock[1] = centerNumber + GameManager.Instance.Column - 1;
 			otherBlock[2] = centerNumber + GameManager.Instance.Column;
 
-
-
 		}//右下
 		else if (centerNumber == (1 + (GameManager.Instance.Row - 1) * GameManager.Instance.Column))
 		{
@@ -184,17 +162,12 @@ public class CheckFunction : MonoBehaviour {
 			otherBlock[1] = (2 + (GameManager.Instance.Row - 2) * GameManager.Instance.Column);
 			otherBlock[2] = (2 + (GameManager.Instance.Row - 1) * GameManager.Instance.Column);
 
-
-
-
 		}//右上
 		else if (centerNumber == (GameManager.Instance.Column + (GameManager.Instance.Row - 1) * GameManager.Instance.Column))
 		{
 			otherBlock[0] = (GameManager.Instance.Column - 1 + (GameManager.Instance.Row - 2) * GameManager.Instance.Column);
 			otherBlock[1] = (GameManager.Instance.Column + (GameManager.Instance.Row - 2) * GameManager.Instance.Column);
 			otherBlock[2] = (GameManager.Instance.Column + (GameManager.Instance.Row - 1) * GameManager.Instance.Column);
-
-
 
 		}//左端沿い
 		else if (1 < centerNumber && centerNumber < GameManager.Instance.Column)
@@ -205,8 +178,6 @@ public class CheckFunction : MonoBehaviour {
 			otherBlock[3] = centerNumber + GameManager.Instance.Column;
 			otherBlock[4] = centerNumber + GameManager.Instance.Column + 1;
 
-
-
 		}//右端沿い
 		else if ((1 + (GameManager.Instance.Row - 1) * GameManager.Instance.Column) < centerNumber && centerNumber < (GameManager.Instance.Column + (GameManager.Instance.Row - 1) * GameManager.Instance.Column))
 		{
@@ -215,8 +186,6 @@ public class CheckFunction : MonoBehaviour {
 			otherBlock[2] = centerNumber - GameManager.Instance.Column + 1;
 			otherBlock[3] = centerNumber - 1;
 			otherBlock[4] = centerNumber + 1;
-
-
 
 		}//下端
 		else if (1 < centerNumber && centerNumber % GameManager.Instance.Column == 1 && centerNumber < (1 + (GameManager.Instance.Row - 1) * GameManager.Instance.Column))
@@ -227,8 +196,6 @@ public class CheckFunction : MonoBehaviour {
 			otherBlock[3] = centerNumber + GameManager.Instance.Column;
 			otherBlock[4] = centerNumber + GameManager.Instance.Column + 1;
 
-
-
 		}//上端
 		else if (GameManager.Instance.Column < centerNumber && centerNumber % GameManager.Instance.Column == 0 && centerNumber < (GameManager.Instance.Column + (GameManager.Instance.Row - 1) * GameManager.Instance.Column))
 		{
@@ -237,8 +204,6 @@ public class CheckFunction : MonoBehaviour {
 			otherBlock[2] = centerNumber - 1;
 			otherBlock[3] = centerNumber + GameManager.Instance.Column - 1;
 			otherBlock[4] = centerNumber + GameManager.Instance.Column;
-
-
 
 		}//中央
 		else
@@ -254,6 +219,85 @@ public class CheckFunction : MonoBehaviour {
 
 		}
 
-		return otherBlock;
+		foreach(int check in otherBlock)
+		{
+			//インスタンス初期化
+			GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + check.ToString());
+
+			//実値のみ
+			if (check != 0)
+			{
+				//まだ空いていないブロックのみ
+				if (CF.GetComponent<CheckFunction>()._status_CF != (int)Status.OPENED)
+				{
+					unOpend.Add(check);
+				}
+			}
+
+		}
+
+		//空いていないブロックのみの配列
+		unOpendBlocks = unOpend.ToArray();
+
+		return unOpendBlocks;
+	}
+
+	//連鎖オープン
+	public void moreOpen(int[] blockList)
+	{
+		Boolean j = false;
+
+		foreach (int isChanged in blockList)
+		{
+			//配列内の実値のみ
+			if (isChanged != 0)
+			{
+				//インスタンス初期化
+				GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + isChanged.ToString());
+
+				//開いてないものかつ、爆弾ではないものをオープンにする
+				if (CF.GetComponent<CheckFunction>()._status_CF != (int)Status.OPENED && CF.GetComponent<CheckFunction>()._status2_CF != 4)
+				{
+					CF.GetComponent<CheckFunction>()._status_CF = (int)Status.OPENED;
+					CF.GetComponent<Image>().color = new Color(0, 1, 1, 1);					
+				}
+
+
+				//周囲に地雷が無い場合
+				//if(aroundSearchBomb(moreOpenDecide(isChanged)) == false)
+				//{
+				//	//開いていないブロックのみの配列を生成
+				//	moreOpenDecide(isChanged)
+				//}
+
+			}
+		}
+
+
+	}
+
+	//周囲のブロックに地雷があるかどうかの判定(true:ある)
+	public Boolean aroundSearchBomb(int [] doubts)
+	{
+
+		Boolean answer = false;
+
+		//クリックしてオープンしたブロックの隣接に地雷があるかどうか調べる
+		foreach (int dBlock in doubts)
+		{
+			if (dBlock != 0)
+			{
+				//インスタンス初期化
+				GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + dBlock.ToString());
+
+				//doubts内に地雷が合った場合trueへ
+				if (CF.GetComponent<CheckFunction>()._status2_CF == (int)Status2.BOMB)
+				{
+					answer = true;
+				}
+			}
+		}
+
+		return answer;
 	}
 }
