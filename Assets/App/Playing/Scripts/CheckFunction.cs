@@ -37,6 +37,9 @@ public class CheckFunction : MonoBehaviour {
 	//周囲のブロック郡
 	private int[] causedBlocks;
 
+	//オープンにする候補のブロック郡
+	private HashSet<int> willOpenblocks;	
+
 	//各ブロックに対して呼ばれる
 	void Start() {
 
@@ -81,9 +84,6 @@ public class CheckFunction : MonoBehaviour {
 	//ブロックのオープン処理
 	private void Open()
 	{
-		//確認
-		Debug.Log(this.gameObject);
-
 		//PlayingDirectorの初期化
 		GameObject PD = GameObject.Find("/PlayingDirector");
 
@@ -91,7 +91,8 @@ public class CheckFunction : MonoBehaviour {
 		PD.GetComponent<CheckGame>().blockObject = this.gameObject.name;
 
 		//ブロックのオープン処理分岐
-		if (_status_CF != (int)Status.OPENED) {
+		if (_status_CF != (int)Status.OPENED)
+		{
 
 			//ブロックのステータスをオープンに変更
 			_status_CF = (int)Status.OPENED;
@@ -99,38 +100,39 @@ public class CheckFunction : MonoBehaviour {
 			//オープンした際にブロックの色を変更する(open)
 			this.GetComponent<Image>().color = new Color(0, 1, 1, 1);
 
-			//クリックしたブロック周りの処理
-			causeOpend(this.gameObject.name);
+			//周りに地雷が無い場合
+			if (haveArroundBomb(int.Parse(this.gameObject.name.Substring(10))) == 0)
+			{
+				int[] openBlocks = moreOpenDecide(int.Parse(this.gameObject.name.Substring(10)));
 
-			//勝敗確認
-			PD.GetComponent<CheckGame>().Win_Lose();
+				foreach(int j in openBlocks)
+				{
+					//インスタンス初期化
+					GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + j.ToString());
 
-		} else if (_status_CF == (int)Status.OPENED) {
+					//オープン連鎖
+					CF.GetComponent<CheckFunction>().Open();
+					
+				}
+			}			
+
+		}
+		else if (_status_CF == (int)Status.OPENED)
+		{
 
 			//オープンブロックをオープンしようとしたときの処理
 			Debug.Log("このブロックは既にオープンになっています");
 
 		}
 
-	}
+		//勝敗確認
+		PD.GetComponent<CheckGame>().Win_Lose();
 
-	//クリックしてオープンしたブロック周辺の処理
-	public void causeOpend(string pointedNumber)
-	{
-		//クリックしてオープンしたブロックの番号取得 + 処理
-		int centerNumber_int = int.Parse(pointedNumber.Substring(10));
-		causedBlocks = moreOpenDecide(centerNumber_int);
-
-		//クリックしてオープンしたブロックの隣接に地雷が無い場合のみ開ける
-		if (aroundSearchBomb(causedBlocks) == false)
-		{
-			//影響させるブロックの連鎖オープン処理
-			moreOpen(causedBlocks);
-		}
 	}
 
 	//周囲ブロックの生成
-	public int[] moreOpenDecide(int centerNumber){
+	public int[] moreOpenDecide(int centerNumber)
+	{
 
 		//8方向のブロック生成
 		int[] otherBlock = new int[8];
@@ -219,7 +221,7 @@ public class CheckFunction : MonoBehaviour {
 
 		}
 
-		foreach(int check in otherBlock)
+		foreach (int check in otherBlock)
 		{
 			//インスタンス初期化
 			GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + check.ToString());
@@ -242,62 +244,31 @@ public class CheckFunction : MonoBehaviour {
 		return unOpendBlocks;
 	}
 
-	//連鎖オープン
-	public void moreOpen(int[] blockList)
-	{
-		Boolean j = false;
-
-		foreach (int isChanged in blockList)
-		{
-			//配列内の実値のみ
-			if (isChanged != 0)
-			{
-				//インスタンス初期化
-				GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + isChanged.ToString());
-
-				//開いてないものかつ、爆弾ではないものをオープンにする
-				if (CF.GetComponent<CheckFunction>()._status_CF != (int)Status.OPENED && CF.GetComponent<CheckFunction>()._status2_CF != 4)
-				{
-					CF.GetComponent<CheckFunction>()._status_CF = (int)Status.OPENED;
-					CF.GetComponent<Image>().color = new Color(0, 1, 1, 1);					
-				}
-
-
-				//周囲に地雷が無い場合
-				//if(aroundSearchBomb(moreOpenDecide(isChanged)) == false)
-				//{
-				//	//開いていないブロックのみの配列を生成
-				//	moreOpenDecide(isChanged)
-				//}
-
-			}
-		}
-
-
-	}
-
-	//周囲のブロックに地雷があるかどうかの判定(true:ある)
-	public Boolean aroundSearchBomb(int [] doubts)
+	//ブロックの周囲に地雷があるかどうかの判定(true:ある)
+	public int haveArroundBomb(int dBlock)
 	{
 
-		Boolean answer = false;
+		int count = 0;
 
 		//クリックしてオープンしたブロックの隣接に地雷があるかどうか調べる
-		foreach (int dBlock in doubts)
+
+		foreach (int doubt in moreOpenDecide(dBlock))
 		{
+
 			if (dBlock != 0)
 			{
 				//インスタンス初期化
-				GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + dBlock.ToString());
+				GameObject CF = GameObject.Find("/BlockCanvas/AreaGenerator/Masu/" + "AreaPrefab" + doubt.ToString());
 
 				//doubts内に地雷が合った場合trueへ
 				if (CF.GetComponent<CheckFunction>()._status2_CF == (int)Status2.BOMB)
 				{
-					answer = true;
+					count++;
 				}
 			}
 		}
 
-		return answer;
+		return count;
 	}
+
 }

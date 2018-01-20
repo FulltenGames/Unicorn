@@ -25,7 +25,7 @@ public class CheckGame : MonoBehaviour{
 		Debug.Log("CheckGameが呼ばれている");
 
 		//bombの数設定
-		bombCount = (GameManager.Instance.Row * GameManager.Instance.Column) / 4;
+		bombCount = (GameManager.Instance.Row * GameManager.Instance.Column) / 8;
 
 		//safeブロックの数決定
 		safeCount = (GameManager.Instance.Row * GameManager.Instance.Column) - bombCount;
