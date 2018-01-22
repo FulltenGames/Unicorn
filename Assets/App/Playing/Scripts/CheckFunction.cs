@@ -64,9 +64,7 @@ public class CheckFunction : MonoBehaviour {
 			{
 				//bomb設定
 				this._status2_CF = (int)Status2.BOMB;
-
-				//bombが付加されているブロックに赤色を設定
-				this.GetComponent<Image>().color = new Color(1, 0, 0, 1);
+				
 			}
 
 			Debug.Log("ステータス" + this.gameObject.name + "は" + this._status2_CF);
@@ -89,6 +87,10 @@ public class CheckFunction : MonoBehaviour {
 
 		//クリックしたブロックの名前をCheckGameに渡す
 		PD.GetComponent<CheckGame>().blockObject = this.gameObject.name;
+		
+		//子オブジェクトのテキストコンポーネント取得
+		Text bombCounter = GetComponentInChildren<Text>();
+
 
 		//ブロックのオープン処理分岐
 		if (_status_CF != (int)Status.OPENED)
@@ -98,7 +100,10 @@ public class CheckFunction : MonoBehaviour {
 			_status_CF = (int)Status.OPENED;
 
 			//オープンした際にブロックの色を変更する(open)
-			this.GetComponent<Image>().color = new Color(0, 1, 1, 1);
+			//this.GetComponent<Text>().text = int.Parse(this.gameObject.name.Substring(10)).ToString();
+
+			//ブロックに周囲の爆弾数を書き込む
+			bombCounter.text = haveArroundBomb(int.Parse(this.gameObject.name.Substring(10))).ToString();
 
 			//周りに地雷が無い場合
 			if (haveArroundBomb(int.Parse(this.gameObject.name.Substring(10))) == 0)
@@ -112,17 +117,17 @@ public class CheckFunction : MonoBehaviour {
 
 					//オープン連鎖
 					CF.GetComponent<CheckFunction>().Open();
-					
+
 				}
 			}			
 
-		}
-		else if (_status_CF == (int)Status.OPENED)
-		{
+		} else if (_status_CF == (int)Status.OPENED){
 
 			//オープンブロックをオープンしようとしたときの処理
 			Debug.Log("このブロックは既にオープンになっています");
 
+			//周囲にあるブロック数の表示
+			bombCounter.text = haveArroundBomb(int.Parse(this.gameObject.name.Substring(10))).ToString();
 		}
 
 		//勝敗確認
@@ -244,7 +249,7 @@ public class CheckFunction : MonoBehaviour {
 		return unOpendBlocks;
 	}
 
-	//ブロックの周囲に地雷があるかどうかの判定(true:ある)
+	//ブロックの周囲に地雷がいくつあるか
 	public int haveArroundBomb(int dBlock)
 	{
 

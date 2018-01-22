@@ -24,6 +24,7 @@ public class TestButton : MonoBehaviour {
         Debug.Log(this.gameObject.name + "のボタンが押された");
         GameManager.Instance.Parameter(GameManager.Instance.Column + 1,GameManager.Instance.Row + 1);
         Debug.Log("行が増えるはず" + GameManager.Instance.Column + "列が増えるはず" + GameManager.Instance.Row);
+
         //タイトルに戻る
         SceneManager.LoadScene("Title");
     }
