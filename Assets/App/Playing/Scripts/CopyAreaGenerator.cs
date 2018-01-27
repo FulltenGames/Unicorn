@@ -42,11 +42,11 @@ public class CopyAreaGenerator : MonoBehaviour
 				bombCounter.GetComponent<Text>().font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
 				bombCounter.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 				bombCounter.GetComponent<Text>().color = new Color(0,0,0,1);
+				bombCounter.GetComponent<Text>().raycastTarget = false;
 
 				//機能としては正しいがクリックの位置が何故かずれる
 				bombCounter.transform.SetParent(Areas[i, j].transform, false);
 				bombCounter.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-
 
 
 				bn++;
